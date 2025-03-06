@@ -1,70 +1,111 @@
-# Getting Started with Create React App
+Customer Rewards Dashboard
+Project Overview
+The Customer Rewards Dashboard is a React-based web application that allows users to view and analyze customer rewards data. It calculates reward points based on transaction amounts and displays the data in a visually appealing dashboard with graphs, cards, and tables.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Features
+Dashboard:
 
-## Available Scripts
+Displays total customers, total transactions, and total rewards.
 
-In the project directory, you can run:
+Shows a bar chart of monthly rewards.
 
-### `npm start`
+Lists all customers with their total rewards in a card layout.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Customer Details:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Displays detailed transaction history for a selected customer.
 
-### `npm test`
+Allows filtering transactions by date range (last 3 months, 6 months, 12 months, or all time).
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Pagination:
 
-### `npm run build`
+Handles large datasets efficiently with pagination.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Modern UI:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Clean and responsive design with hover effects and animations.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Uses a professional color scheme (shades of blue, gray, and white).
+Installation Instructions
+Follow these steps to set up the project locally:
 
-### `npm run eject`
+Clone the Repository:git clone https://github.com/your-username/customer-rewards-dashboard.git
+cd customer-rewards-dashboard
+Install Dependencies:npm install
+Run the Application:npm start
+Open in Browser:Visit http://localhost:3000 to view the application.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Usage
+Dashboard:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+View total customers, transactions, and rewards.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Explore the monthly rewards bar chart.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Click on a customer card to view their transaction details.
 
-## Learn More
+Customer Details:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+View detailed transaction history for the selected customer.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Use the filter dropdown to view transactions for a specific date range.
 
-### Code Splitting
+Pagination:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Navigate through large datasets using pagination buttons.
 
-### Analyzing the Bundle Size
+Folder Structure
+Copy
+customer-rewards-dashboard/
+├── public/
+├── src/
+│ ├── components/
+│ │ ├── CustomerTable.js
+│ │ ├── RewardDetails.js
+│ │ ├── TransactionTable.js
+│ ├── utils/
+│ │ ├── calculateRewards.js
+│ │ ├── api.js
+│ │ ├── mockData.js
+│ ├── styles/
+│ │ ├── dashboardStyles.js
+│ │ ├── globalStyles.js
+│ ├── App.js
+│ ├── index.js
+├── tests/
+│ ├── calculateRewards.test.js
+│ ├── App.test.js
+├── README.md
+├── package.json
+Technologies Used
+React: Frontend library for building the user interface.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Styled Components: For styling React components.
 
-### Making a Progressive Web App
+Recharts: For displaying graphs and charts.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+React Icons: For adding icons to the UI.
 
-### Advanced Configuration
+PropTypes: For type-checking React props.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Jest: For unit testing.
 
-### Deployment
+Screenshots
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+1. Dashboard View
 
-### `npm run build` fails to minify
+Displays total customers, transactions, and rewards.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Shows a bar chart of monthly rewards.
+
+Lists all customers with their total rewards in a card layout.
+
+2. Customer Details View
+
+Displays detailed transaction history for the selected customer.
+
+Includes a filter dropdown for date range.
+
+3. Pagination
+
+Handles large datasets efficiently with pagination.
