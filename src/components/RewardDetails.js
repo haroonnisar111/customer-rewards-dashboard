@@ -1,36 +1,83 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import TransactionTable from './TransactionTable';
 import Filters from './Filters';
-import { DetailsContainer, BackButton } from '../styles/dashboardStyles';
+import { DetailsContainer, FilterContainer } from '../styles/dashboardStyles';
+import { months, years, monthMap, MESSAGES } from '../constant/constant';
 
-const RewardDetails = ({ customerId, transactions, onBack }) => {
-  const [filteredTransactions, setFilteredTransactions] =
-    useState(transactions);
+const RewardDetails = ({ customerId, transactions }) => {
+  const [activeFilters, setActiveFilters] = useState({
+    month: 'last-3-months',
+    year: '2025',
+  });
 
-  const handleFilterChange = range => {
-    debugger;
-    const currentDate = new Date();
-    const filtered = transactions.filter(transaction => {
-      const transactionDate = new Date(transaction.date);
+  const applyFilters = useCallback(
+    filters => {
+      const currentDate = new Date();
 
-      const monthsDifference =
-        (currentDate.getFullYear() - transactionDate.getFullYear()) * 12 +
-        (currentDate.getMonth() - transactionDate.getMonth());
+      return transactions.filter(({ date }) => {
+        const transactionDate = new Date(date);
+        const transactionYear = transactionDate.getFullYear();
+        const transactionMonth = transactionDate.getMonth();
 
-      if (range === 'all') return true;
+        if (filters.year && transactionYear !== parseInt(filters.year)) {
+          return false;
+        }
 
-      return monthsDifference <= parseInt(range) && monthsDifference >= 0;
-    });
+        if (filters.month === 'last-3-months') {
+          const threeMonthsAgo = new Date(currentDate);
+          threeMonthsAgo.setMonth(currentDate.getMonth() - 3);
+          return (
+            transactionDate >= threeMonthsAgo && transactionDate <= currentDate
+          );
+        } else if (filters.month) {
+          const selectedMonth = monthMap[filters.month.toLowerCase()];
+          if (
+            selectedMonth !== undefined &&
+            transactionMonth !== selectedMonth
+          ) {
+            return false;
+          }
+        }
 
-    setFilteredTransactions(filtered);
-  };
+        return true;
+      });
+    },
+    [transactions]
+  );
+
+  const handleFilterChange = useCallback((type, value) => {
+    setActiveFilters(prevFilters => ({
+      ...prevFilters,
+      [type]: value,
+    }));
+  }, []);
+
+  const filteredTransactions = useMemo(
+    () => applyFilters(activeFilters),
+    [activeFilters, applyFilters]
+  );
 
   return (
     <DetailsContainer>
-      <h2>Transaction Details for Customer {customerId}</h2>
-      <BackButton onClick={onBack}>Back to Dashboard</BackButton>
-      <Filters onFilterChange={handleFilterChange} />
+      <h2>
+        {MESSAGES.TRANSACTION_DETAILS_FOR_CUSTOMER} {customerId}
+      </h2>
+      <FilterContainer>
+        <Filters
+          onFilterChange={value => handleFilterChange('month', value)}
+          filterOptions={months}
+          label='Filter by Month'
+          defaultValue={activeFilters.month}
+        />
+        <Filters
+          onFilterChange={value => handleFilterChange('year', value)}
+          filterOptions={years}
+          label='Filter by Year'
+          defaultValue={activeFilters.year}
+        />
+      </FilterContainer>
+
       <TransactionTable transactions={filteredTransactions} />
     </DetailsContainer>
   );
@@ -38,8 +85,15 @@ const RewardDetails = ({ customerId, transactions, onBack }) => {
 
 RewardDetails.propTypes = {
   customerId: PropTypes.number.isRequired,
-  transactions: PropTypes.array.isRequired,
-  onBack: PropTypes.func.isRequired,
+  transactions: PropTypes.arrayOf(
+    PropTypes.shape({
+      transactionId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+        .isRequired,
+      amount: PropTypes.number.isRequired,
+      date: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  onBack: PropTypes.func,
 };
 
 export default RewardDetails;

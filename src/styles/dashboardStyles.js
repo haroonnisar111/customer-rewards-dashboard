@@ -6,6 +6,10 @@ export const DetailsContainer = styled.div`
     margin-bottom: 20px;
   }
 `;
+export const FilterContainer = styled.div`
+  display: flex;
+  align-items: center;
+`;
 
 export const FiltersContainer = styled.div`
   display: flex;
@@ -16,6 +20,7 @@ export const FiltersContainer = styled.div`
 export const FilterLabel = styled.label`
   margin-right: 10px;
   font-weight: bold;
+  padding: 10px;
 `;
 
 export const FilterSelect = styled.select`
@@ -24,13 +29,6 @@ export const FilterSelect = styled.select`
   border: 1px solid #ddd;
   background: #fff;
   font-size: 14px;
-`;
-
-export const PaginationContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  flex-wrap: wrap;
 `;
 
 export const PaginationButton = styled.button`
@@ -196,4 +194,89 @@ export const GraphContainer = styled.div`
     margin-bottom: 20px;
     color: #333;
   }
+`;
+
+// Table styled components
+export const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+`;
+
+export const TableHeader = styled.thead`
+  background-color: #f8f9fa;
+`;
+
+export const TableHeaderCell = styled.th`
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #e9ecef;
+`;
+
+export const TableRow = styled.tr`
+  cursor: pointer;
+  transition: background-color 0.2s;
+  &:hover {
+    background-color: #f1f5f9;
+  }
+  &:not(:last-child) {
+    border-bottom: 1px solid #e9ecef;
+  }
+`;
+
+export const TableCell = styled.td`
+  padding: 1rem;
+`;
+
+export const RewardsCell = styled(TableCell)`
+  font-weight: 600;
+  color: #3498db;
+`;
+
+export const PaginationContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+`;
+
+export const PageInfo = styled.div`
+  font-size: 0.9rem;
+  color: #6c757d;
+`;
+
+export const PaginationButtons = styled.div`
+  display: flex;
+  gap: 0.5rem;
+`;
+
+export const PageButton = styled.button`
+  padding: 0.5rem 1rem;
+  border: 1px solid #e9ecef;
+  background-color: ${props => (props.active ? '#3498db' : 'white')};
+  color: ${props => (props.active ? 'white' : '#333')};
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: ${props => (props.active ? '#3498db' : '#f1f5f9')};
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #f8f9fa;
+  }
+`;
+
+export const RewardsPaginationContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
 `;

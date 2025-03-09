@@ -29,7 +29,7 @@ Uses a professional color scheme (shades of blue, gray, and white).
 Installation Instructions
 Follow these steps to set up the project locally:
 
-Clone the Repository:git clone https://github.com/your-username/customer-rewards-dashboard.git
+Clone the Repository:git clone https://github.com/your-username//////.git
 cd customer-rewards-dashboard
 Install Dependencies:npm install
 Run the Application:npm start

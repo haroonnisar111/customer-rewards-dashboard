@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { calculateRewards } from '../utils/calculateRewards';
 import {
@@ -9,16 +9,18 @@ import {
 } from '../styles/dashboardStyles';
 
 const CustomerTable = ({ transactions, onSelectCustomer }) => {
-  const customerRewards = transactions.reduce((acc, transaction) => {
-    const { customerId, amount } = transaction;
-    const rewards = calculateRewards(amount);
+  const customerRewards = useMemo(() => {
+    return transactions.reduce((acc, transaction) => {
+      const { customerId, amount } = transaction;
+      const rewards = calculateRewards(amount);
 
-    if (!acc[customerId]) {
-      acc[customerId] = { total: 0 };
-    }
-    acc[customerId].total += rewards;
-    return acc;
-  }, {});
+      if (!acc[customerId]) {
+        acc[customerId] = { total: 0 };
+      }
+      acc[customerId].total += rewards;
+      return acc;
+    }, {});
+  }, [transactions]);
 
   return (
     <CustomerGrid>
@@ -36,7 +38,12 @@ const CustomerTable = ({ transactions, onSelectCustomer }) => {
 };
 
 CustomerTable.propTypes = {
-  transactions: PropTypes.array.isRequired,
+  transactions: PropTypes.arrayOf(
+    PropTypes.shape({
+      customerId: PropTypes.number.isRequired,
+      amount: PropTypes.number.isRequired,
+    })
+  ).isRequired,
   onSelectCustomer: PropTypes.func.isRequired,
 };
 

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import CustomerTable from './CustomerTable';
 import RewardDetails from './RewardDetails';
 import {
@@ -12,6 +13,7 @@ import {
   GraphContainer,
 } from '../styles/dashboardStyles';
 import { FaArrowLeft } from 'react-icons/fa';
+import { DASHBOARDLABELS, MESSAGES } from '../constant/constant';
 import {
   BarChart,
   Bar,
@@ -26,35 +28,65 @@ import { calculateRewards } from '../utils/calculateRewards';
 const Dashboard = ({ transactions }) => {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
 
-  const totalRewards = transactions.reduce((acc, transaction) => {
-    const rewards = calculateRewards(transaction.amount);
-    return acc + rewards;
-  }, 0);
+  // Calculate total rewards, monthly rewards, and unique customers count
+  const { totalRewards, monthlyRewards, uniqueCustomersCount } = useMemo(() => {
+    const result = transactions.reduce(
+      (acc, transaction) => {
+        const rewards = calculateRewards(transaction.amount);
 
-  const monthlyRewards = transactions.reduce((acc, transaction) => {
-    const month = new Date(transaction.date).toLocaleString('default', {
-      month: 'short',
-    });
-    const rewards = calculateRewards(transaction.amount);
-    acc[month] = (acc[month] || 0) + rewards;
-    return acc;
-  }, {});
+        acc.totalRewards += rewards;
 
-  const graphData = Object.entries(monthlyRewards).map(([month, rewards]) => ({
-    month,
-    rewards,
-  }));
+        const month = new Date(transaction.date).toLocaleString('default', {
+          month: 'short',
+        });
+        acc.monthlyRewards[month] = (acc.monthlyRewards[month] || 0) + rewards;
+
+        acc.uniqueCustomers.add(transaction.customerId);
+
+        return acc;
+      },
+      {
+        totalRewards: 0,
+        monthlyRewards: {},
+        uniqueCustomers: new Set(),
+      }
+    );
+
+    return {
+      totalRewards: result.totalRewards,
+      monthlyRewards: result.monthlyRewards,
+      uniqueCustomersCount: result.uniqueCustomers.size,
+    };
+  }, [transactions]);
+
+  // Create data for the bar chart
+  const graphData = useMemo(() => {
+    return Object.entries(monthlyRewards).map(([month, rewards]) => ({
+      month,
+      rewards,
+    }));
+  }, [monthlyRewards]);
+
+  // Use useCallback for event handlers
+  const backButtonClick = useCallback(() => {
+    setSelectedCustomer(null);
+  }, []);
+
+  // Memoize the customer selection handler
+  const handleCustomerSelect = useCallback(customerId => {
+    setSelectedCustomer(customerId);
+  }, []);
 
   return (
     <DashboardContainer>
       <DashboardHeader>
         <HeaderTitle>
           {selectedCustomer ? (
-            <BackButton onClick={() => setSelectedCustomer(null)}>
+            <BackButton onClick={backButtonClick}>
               <FaArrowLeft />
             </BackButton>
           ) : null}
-          <h1>Customer Rewards Dashboard</h1>
+          <h1>{DASHBOARDLABELS.CUSTOMERS_REWARDS_DASHBOARD}</h1>
         </HeaderTitle>
       </DashboardHeader>
       <DashboardContent>
@@ -62,21 +94,23 @@ const Dashboard = ({ transactions }) => {
           <>
             <StatsContainer>
               <StatCard>
-                <h3>Total Customers</h3>
-                <p>{new Set(transactions.map(t => t.customerId)).size}</p>
+                <h3>{DASHBOARDLABELS.TOTAL_CUSTOMERS}</h3>
+                <p>{uniqueCustomersCount}</p>
               </StatCard>
               <StatCard>
-                <h3>Total Transactions</h3>
+                <h3>{DASHBOARDLABELS.TOTAL_TRANSCTIONS}</h3>
                 <p>{transactions.length}</p>
               </StatCard>
               <StatCard>
-                <h3>Total Rewards</h3>
-                <p>{totalRewards} Points</p>
+                <h3>{DASHBOARDLABELS.TOTAL_REWARDS}</h3>
+                <p>
+                  {totalRewards} {MESSAGES.POINTS}
+                </p>
               </StatCard>
             </StatsContainer>
             <GraphContainer>
-              <h2>Monthly Rewards</h2>
-              <BarChart width={600} height={300} data={graphData}>
+              <h2>{DASHBOARDLABELS.CUSTOMERS_MONTHLY_REWARDS}</h2>
+              <BarChart width={1000} height={300} data={graphData}>
                 <CartesianGrid strokeDasharray='3 3' />
                 <XAxis dataKey='month' />
                 <YAxis />
@@ -87,19 +121,31 @@ const Dashboard = ({ transactions }) => {
             </GraphContainer>
             <CustomerTable
               transactions={transactions}
-              onSelectCustomer={setSelectedCustomer}
+              onSelectCustomer={handleCustomerSelect}
             />
           </>
         ) : (
           <RewardDetails
             customerId={selectedCustomer}
             transactions={transactions}
-            onBack={() => setSelectedCustomer(null)}
+            onBack={backButtonClick}
           />
         )}
       </DashboardContent>
     </DashboardContainer>
   );
+};
+
+Dashboard.propTypes = {
+  transactions: PropTypes.arrayOf(
+    PropTypes.shape({
+      customerId: PropTypes.number.isRequired,
+      amount: PropTypes.number.isRequired,
+      date: PropTypes.string.isRequired,
+      // You can add more fields if needed
+      // id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    })
+  ).isRequired,
 };
 
 export default Dashboard;

@@ -1,30 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
   FiltersContainer,
   FilterLabel,
   FilterSelect,
 } from '../styles/dashboardStyles';
 
-const Filters = ({ onFilterChange }) => {
-  const [selectedRange, setSelectedRange] = useState('all');
+const Filters = ({ onFilterChange, filterOptions, label, defaultValue }) => {
+  const [selectedValue, setSelectedValue] = useState(
+    defaultValue || filterOptions[0].value
+  );
 
-  const handleRangeChange = e => {
-    const range = e.target.value;
-    setSelectedRange(range);
-    onFilterChange(range);
+  useEffect(() => {
+    if (defaultValue) {
+      setSelectedValue(defaultValue);
+    }
+  }, [defaultValue]);
+
+  const handleChange = e => {
+    const value = e.target.value;
+    setSelectedValue(value);
+    onFilterChange(value);
   };
 
   return (
     <FiltersContainer>
-      <FilterLabel>Filter by:</FilterLabel>
-      <FilterSelect value={selectedRange} onChange={handleRangeChange}>
-        <option value='all'>All Time</option>
-        <option value='3'>Last 3 Months</option>
-        <option value='6'>Last 6 Months</option>
-        <option value='12'>Last 12 Months</option>
+      <FilterLabel>{label}</FilterLabel>
+      <FilterSelect value={selectedValue} onChange={handleChange}>
+        {filterOptions.map(option => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
       </FilterSelect>
     </FiltersContainer>
   );
+};
+
+Filters.propTypes = {
+  onFilterChange: PropTypes.func.isRequired,
+  filterOptions: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  label: PropTypes.string.isRequired,
+  defaultValue: PropTypes.string,
 };
 
 export default Filters;
