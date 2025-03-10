@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import CustomerTable from './CustomerTable';
-import RewardDetails from './RewardDetails';
+import CustomerTable from './customerTable';
+import RewardDetails from './rewardDetails';
 import {
   DashboardContainer,
   DashboardHeader,
@@ -28,7 +28,6 @@ import { calculateRewards } from '../utils/calculateRewards';
 const Dashboard = ({ transactions }) => {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
 
-  // Calculate total rewards, monthly rewards, and unique customers count
   const { totalRewards, monthlyRewards, uniqueCustomersCount } = useMemo(() => {
     const result = transactions.reduce(
       (acc, transaction) => {
@@ -59,7 +58,6 @@ const Dashboard = ({ transactions }) => {
     };
   }, [transactions]);
 
-  // Create data for the bar chart
   const graphData = useMemo(() => {
     return Object.entries(monthlyRewards).map(([month, rewards]) => ({
       month,
@@ -67,12 +65,10 @@ const Dashboard = ({ transactions }) => {
     }));
   }, [monthlyRewards]);
 
-  // Use useCallback for event handlers
   const backButtonClick = useCallback(() => {
     setSelectedCustomer(null);
   }, []);
 
-  // Memoize the customer selection handler
   const handleCustomerSelect = useCallback(customerId => {
     setSelectedCustomer(customerId);
   }, []);
@@ -142,8 +138,6 @@ Dashboard.propTypes = {
       customerId: PropTypes.number.isRequired,
       amount: PropTypes.number.isRequired,
       date: PropTypes.string.isRequired,
-      // You can add more fields if needed
-      // id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     })
   ).isRequired,
 };

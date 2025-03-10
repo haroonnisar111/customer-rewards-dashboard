@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import TransactionTable from './TransactionTable';
-import Filters from './Filters';
+import TransactionTable from './transactionTable';
+import Filters from './filters';
 import { DetailsContainer, FilterContainer } from '../styles/dashboardStyles';
 import { months, years, monthMap, MESSAGES } from '../constant/constant';
 

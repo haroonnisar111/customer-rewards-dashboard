@@ -1,39 +1,140 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { calculateRewards } from '../utils/calculateRewards';
 import {
-  CustomerGrid,
-  CustomerCard,
-  CustomerName,
-  CustomerRewards,
+  MESSAGES,
+  HEADERS,
+  BUTTONS,
+  CUSTOMERS_PER_PAGE,
+} from '../constant/constant';
+import {
+  Table,
+  TableHeader,
+  TableHeaderCell,
+  TableRow,
+  TableCell,
+  RewardsCell,
+  PaginationContainer,
+  PageInfo,
+  PaginationButtons,
+  PageButton,
 } from '../styles/dashboardStyles';
+import { getPaginationData } from '../utils/pagination';
 
 const CustomerTable = ({ transactions, onSelectCustomer }) => {
-  const customerRewards = useMemo(() => {
-    return transactions.reduce((acc, transaction) => {
-      const { customerId, amount } = transaction;
-      const rewards = calculateRewards(amount);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const { allCustomers } = useMemo(() => {
+    const rewards = transactions.reduce((acc, { customerId, amount }) => {
+      const rewardPoints = calculateRewards(amount);
 
       if (!acc[customerId]) {
-        acc[customerId] = { total: 0 };
+        acc[customerId] = { total: 0, transactionCount: 0 };
       }
-      acc[customerId].total += rewards;
+
+      acc[customerId].total += rewardPoints;
+      acc[customerId].transactionCount += 1;
+
       return acc;
     }, {});
+
+    const customers = Object.entries(rewards).map(([customerId, data]) => ({
+      id: Number(customerId),
+      totalRewards: data.total,
+      transactionCount: data.transactionCount,
+    }));
+
+    return { allCustomers: customers };
   }, [transactions]);
 
+  const {
+    currentItems: currentCustomers,
+    indexOfFirstItem: indexOfFirstCustomer,
+    indexOfLastItem: indexOfLastCustomer,
+    totalPages,
+  } = getPaginationData(allCustomers, currentPage, CUSTOMERS_PER_PAGE);
+
+  const pageNumbers = useMemo(() => {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }, [totalPages]);
+
+  const goToNextPage = useCallback(() => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  }, [totalPages]);
+
+  const goToPrevPage = useCallback(() => {
+    setCurrentPage(prev => Math.max(prev - 1, 1));
+  }, []);
+
+  const goToPage = useCallback(pageNumber => {
+    setCurrentPage(pageNumber);
+  }, []);
+
+  const handleCustomerClick = useCallback(
+    customerId => {
+      onSelectCustomer(customerId);
+    },
+    [onSelectCustomer]
+  );
+
   return (
-    <CustomerGrid>
-      {Object.entries(customerRewards).map(([customerId, rewards]) => (
-        <CustomerCard
-          key={customerId}
-          onClick={() => onSelectCustomer(Number(customerId))}
-        >
-          <CustomerName>Customer {customerId}</CustomerName>
-          <CustomerRewards>{rewards.total} Points</CustomerRewards>
-        </CustomerCard>
-      ))}
-    </CustomerGrid>
+    <>
+      <Table>
+        <TableHeader>
+          <tr>
+            <TableHeaderCell>{HEADERS.CUSTOMER_ID}</TableHeaderCell>
+            <TableHeaderCell>{HEADERS.TRANSACTION}</TableHeaderCell>
+            <TableHeaderCell>{HEADERS.TOTAL_REWARDS}</TableHeaderCell>
+          </tr>
+        </TableHeader>
+        <tbody>
+          {currentCustomers.map(customer => (
+            <TableRow
+              key={customer.id}
+              onClick={() => handleCustomerClick(customer.id)}
+            >
+              <TableCell>Customer {customer.id}</TableCell>
+              <TableCell>{customer.transactionCount}</TableCell>
+              <RewardsCell>
+                {customer.totalRewards} {MESSAGES.POINTS}
+              </RewardsCell>
+            </TableRow>
+          ))}
+        </tbody>
+      </Table>
+
+      {totalPages > 1 && (
+        <PaginationContainer>
+          <PageInfo>
+            Showing {indexOfFirstCustomer + 1}-
+            {Math.min(indexOfLastCustomer, allCustomers.length)} of{' '}
+            {allCustomers.length} customers
+          </PageInfo>
+          <PaginationButtons>
+            <PageButton onClick={goToPrevPage} disabled={currentPage === 1}>
+              {BUTTONS.Back}
+            </PageButton>
+
+            {pageNumbers.map(number => (
+              <PageButton
+                key={number}
+                active={currentPage === number}
+                onClick={() => goToPage(number)}
+              >
+                {number}
+              </PageButton>
+            ))}
+
+            <PageButton
+              onClick={goToNextPage}
+              disabled={currentPage === totalPages}
+            >
+              {BUTTONS.Next}
+            </PageButton>
+          </PaginationButtons>
+        </PaginationContainer>
+      )}
+    </>
   );
 };
 
@@ -47,4 +148,4 @@ CustomerTable.propTypes = {
   onSelectCustomer: PropTypes.func.isRequired,
 };
 
-export default CustomerTable;
+export default React.memo(CustomerTable);
