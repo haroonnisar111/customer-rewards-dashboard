@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { dataUrl } from '../constant/constant';
+import { DATA_URL } from '../constant/constant';
 import logger from '../loggers/index';
 
 const useFetchTransactions = () => {
@@ -8,7 +8,7 @@ const useFetchTransactions = () => {
 
   const fetchTransactions = useCallback(() => {
     setIsLoading(true);
-    fetch(dataUrl)
+    fetch(DATA_URL)
       .then(response => response.json())
       .then(data => {
         setTransactions(data);

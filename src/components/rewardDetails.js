@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import TransactionTable from './transactionTable';
 import Filters from './filters';
 import { DetailsContainer, FilterContainer } from '../styles/dashboardStyles';
-import { months, years, monthMap, MESSAGES } from '../constant/constant';
+import { MONTHS, YEARS, DASHBOARD_LABELS, MESSAGES } from '../constant/constant';
 
 const RewardDetails = ({ customerId, transactions }) => {
   const [activeFilters, setActiveFilters] = useState({
@@ -31,7 +31,7 @@ const RewardDetails = ({ customerId, transactions }) => {
             transactionDate >= threeMonthsAgo && transactionDate <= currentDate
           );
         } else if (filters.month) {
-          const selectedMonth = monthMap[filters.month.toLowerCase()];
+          const selectedMonth = DASHBOARD_LABELS[filters.month.toLowerCase()];
           if (
             selectedMonth !== undefined &&
             transactionMonth !== selectedMonth
@@ -66,13 +66,13 @@ const RewardDetails = ({ customerId, transactions }) => {
       <FilterContainer>
         <Filters
           onFilterChange={value => handleFilterChange('month', value)}
-          filterOptions={months}
+          filterOptions={MONTHS}
           label='Filter by Month'
           defaultValue={activeFilters.month}
         />
         <Filters
           onFilterChange={value => handleFilterChange('year', value)}
-          filterOptions={years}
+          filterOptions={YEARS}
           label='Filter by Year'
           defaultValue={activeFilters.year}
         />

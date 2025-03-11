@@ -20,32 +20,34 @@ import {
   PageButton,
 } from '../styles/dashboardStyles';
 import { getPaginationData } from '../utils/pagination';
+function calculateCustomerReward(transactions){
+  const rewards = transactions.reduce((acc, { customerId, amount }) => {
+    const rewardPoints = calculateRewards(amount);
 
+    if (!acc[customerId]) {
+      acc[customerId] = { total: 0, transactionCount: 0 };
+    }
+
+    acc[customerId].total += rewardPoints;
+    acc[customerId].transactionCount += 1;
+
+    return acc;
+  }, {});
+
+  const customers = Object.entries(rewards)?.map(([customerId, data]) => ({
+    id: Number(customerId),
+    totalRewards: data.total,
+    transactionCount: data.transactionCount,
+  }));
+
+  return { allCustomers: customers };
+}
 const CustomerTable = ({ transactions, onSelectCustomer }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { allCustomers } = useMemo(() => {
-    const rewards = transactions.reduce((acc, { customerId, amount }) => {
-      const rewardPoints = calculateRewards(amount);
-
-      if (!acc[customerId]) {
-        acc[customerId] = { total: 0, transactionCount: 0 };
-      }
-
-      acc[customerId].total += rewardPoints;
-      acc[customerId].transactionCount += 1;
-
-      return acc;
-    }, {});
-
-    const customers = Object.entries(rewards).map(([customerId, data]) => ({
-      id: Number(customerId),
-      totalRewards: data.total,
-      transactionCount: data.transactionCount,
-    }));
-
-    return { allCustomers: customers };
-  }, [transactions]);
+  const { allCustomers } = useMemo(() => 
+    calculateCustomerReward(transactions)
+, [transactions]);
 
   const {
     currentItems: currentCustomers,
@@ -112,7 +114,7 @@ const CustomerTable = ({ transactions, onSelectCustomer }) => {
           </PageInfo>
           <PaginationButtons>
             <PageButton onClick={goToPrevPage} disabled={currentPage === 1}>
-              {BUTTONS.Back}
+              {BUTTONS.BACK}
             </PageButton>
 
             {pageNumbers.map(number => (
@@ -129,7 +131,7 @@ const CustomerTable = ({ transactions, onSelectCustomer }) => {
               onClick={goToNextPage}
               disabled={currentPage === totalPages}
             >
-              {BUTTONS.Next}
+              {BUTTONS.NEXT}
             </PageButton>
           </PaginationButtons>
         </PaginationContainer>

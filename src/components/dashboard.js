@@ -13,7 +13,7 @@ import {
   GraphContainer,
 } from '../styles/dashboardStyles';
 import { FaArrowLeft } from 'react-icons/fa';
-import { DASHBOARDLABELS, MESSAGES } from '../constant/constant';
+import { DASHBOARD_LABELS, MESSAGES } from '../constant/constant';
 import {
   BarChart,
   Bar,
@@ -82,7 +82,7 @@ const Dashboard = ({ transactions }) => {
               <FaArrowLeft />
             </BackButton>
           ) : null}
-          <h1>{DASHBOARDLABELS.CUSTOMERS_REWARDS_DASHBOARD}</h1>
+          <h1>{DASHBOARD_LABELS.CUSTOMERS_REWARDS_DASHBOARD}</h1>
         </HeaderTitle>
       </DashboardHeader>
       <DashboardContent>
@@ -90,22 +90,22 @@ const Dashboard = ({ transactions }) => {
           <>
             <StatsContainer>
               <StatCard>
-                <h3>{DASHBOARDLABELS.TOTAL_CUSTOMERS}</h3>
+                <h3>{DASHBOARD_LABELS.TOTAL_CUSTOMERS}</h3>
                 <p>{uniqueCustomersCount}</p>
               </StatCard>
               <StatCard>
-                <h3>{DASHBOARDLABELS.TOTAL_TRANSCTIONS}</h3>
+                <h3>{DASHBOARD_LABELS.TOTAL_TRANSCTIONS}</h3>
                 <p>{transactions.length}</p>
               </StatCard>
               <StatCard>
-                <h3>{DASHBOARDLABELS.TOTAL_REWARDS}</h3>
+                <h3>{DASHBOARD_LABELS.TOTAL_REWARDS}</h3>
                 <p>
                   {totalRewards} {MESSAGES.POINTS}
                 </p>
               </StatCard>
             </StatsContainer>
             <GraphContainer>
-              <h2>{DASHBOARDLABELS.CUSTOMERS_MONTHLY_REWARDS}</h2>
+              <h2>{DASHBOARD_LABELS.CUSTOMERS_MONTHLY_REWARDS}</h2>
               <BarChart width={1000} height={300} data={graphData}>
                 <CartesianGrid strokeDasharray='3 3' />
                 <XAxis dataKey='month' />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Table, Th, Td, TableRow } from '../styles/tableStyles';
 import { HEADERS, MESSAGES } from '../constant/constant';
@@ -8,7 +8,7 @@ import {
 } from '../styles/dashboardStyles';
 import { calculateRewards } from '../utils/calculateRewards';
 import { getPaginationData } from '../utils/pagination';
-
+const ROWS_PER_PAGE=10;
 const TransactionTable = ({ transactions }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -23,7 +23,7 @@ const TransactionTable = ({ transactions }) => {
   const { currentItems: currentTransactions, totalPages } = getPaginationData(
     sortedTransactions,
     currentPage,
-    10
+    ROWS_PER_PAGE
   );
   useEffect(() => {
     setCurrentPage(1);
@@ -33,10 +33,13 @@ const TransactionTable = ({ transactions }) => {
     setCurrentPage(page);
   };
 
-  const formatDate = dateString => {
-    const options = { year: 'numeric', month: 'short', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
+  const formatDate = useCallback(dateString => {
+    return new Date(dateString).toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  },[]);
 
   return (
     <>
@@ -50,22 +53,26 @@ const TransactionTable = ({ transactions }) => {
           </TableRow>
         </thead>
         <tbody>
-          {currentTransactions.map(transaction => (
+       
+          {
+            currentTransactions.length > 0 ?
+            currentTransactions?.map(transaction => (
             <TableRow key={transaction.transactionId}>
               <Td>{transaction?.transactionId}</Td>
               <Td>${transaction?.amount.toFixed(2)}</Td>
               <Td>{formatDate(transaction?.date)}</Td>
               <Td>{calculateRewards(transaction?.amount)}</Td>
             </TableRow>
-          ))}
-          {currentTransactions.length === 0 && (
+          )) :(
             <TableRow>
               <Td colSpan={4} style={{ textAlign: 'center' }}>
-                {MESSAGES.NO_TRANSCTIONS_FOUND}
+                {MESSAGES.NO_TRANSACTIONS_FOUND}
               </Td>
             </TableRow>
-          )}
+          )
+        }
         </tbody>
+        
       </Table>
       {totalPages > 0 && (
         <RewardsPaginationContainer>
